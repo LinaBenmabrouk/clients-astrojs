@@ -43,6 +43,7 @@ jobs:
             sudo systemctl status clients
 
             echo "Health check..."
+            sleep 3
             curl --fail http://localhost:3344/
 
             echo "======================================"
