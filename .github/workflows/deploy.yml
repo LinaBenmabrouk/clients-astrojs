@@ -1,0 +1,50 @@
+name: Deploy AstroJS
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy on Ubuntu server
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            set -e
+
+            echo "======================================"
+            echo "Début du déploiement"
+            echo "======================================"
+
+            cd /var/www/clients/clients-astrojs
+
+            echo "Mise à jour du code..."
+            git pull origin main
+
+            echo "Installation des dépendances..."
+            bun ci
+
+            echo "Compilation Astro..."
+            bun run --bun build
+
+            echo "Redémarrage de l'application..."
+            sudo systemctl restart clients
+
+            echo "Vérification du service..."
+            sudo systemctl status clients
+
+            echo "Health check..."
+            curl --fail http://localhost:3344/
+
+            echo "======================================"
+            echo "Déploiement terminé"
+            echo "======================================"
