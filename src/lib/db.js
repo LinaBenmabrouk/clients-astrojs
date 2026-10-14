@@ -1,7 +1,7 @@
-import { Database } from "bun:sqlite";
+import { DatabaseSync } from "node:sqlite";
 import { fileURLToPath } from "node:url";
-import { dirname, join , resolve} from "node:path";
-import { mkdirSync } from "node:fs";  
+import { dirname, resolve } from "node:path";
+import { mkdirSync } from "node:fs";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
@@ -10,10 +10,10 @@ const dbPath = resolve(
 );
 mkdirSync(dirname(dbPath), { recursive: true });
 
-const db = new Database(dbPath);
+const db = new DatabaseSync(dbPath);
 
 export function getClients() {
-  return db.query(`
+  return db.prepare(`
     SELECT
       id,
       name,
