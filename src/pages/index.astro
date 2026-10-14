@@ -1,6 +1,8 @@
 ---
 import { getClients } from "../lib/db.js";
 
+const user = Astro.locals.user;
+
 const clients = getClients();
 
 const clientCount = clients.length;
@@ -469,6 +471,16 @@ const locationsCount = clients.filter(
       </div>
     </div>
 
+    {user && (
+      <div class="user-area">
+        <div class="user-info">
+          <div class="user-name">{user.name}</div>
+          <div class="user-email">{user.email}</div>
+        </div>
+        <button id="logout" class="logout">Déconnexion</button>
+      </div>
+    )}
+
   </header>
   <main>
 
@@ -814,6 +826,15 @@ const locationsCount = clients.filter(
 
     }
 
+  </script>
+
+  <script>
+    import { authClient } from "../lib/auth-client";
+
+    document.querySelector("#logout")?.addEventListener("click", async () => {
+      await authClient.signOut();
+      window.location.href = "/login";
+    });
   </script>
 
 </body>
